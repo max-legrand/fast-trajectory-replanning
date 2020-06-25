@@ -70,7 +70,7 @@ def find_unvisited():
 
 if __name__ == "__main__":
     # Iterate for 50 grids
-    for i in range(0, 50):
+    for i in range(1, 51):
         print(f"=== Generating Grid {i} ===")
         grid = []
 
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         for row in range(0, MAXSIZE):
             grid.append([])
             for col in range(0, MAXSIZE):
-                grid[row].append({"visited": False, "unblocked": True})
+                grid[row].append({"visited": False, "unblocked": True, "x": row, "y": col})
 
         start_cell = (random.randint(0, MAXSIZE-1), random.randint(0, MAXSIZE-1))
 
@@ -121,10 +121,15 @@ if __name__ == "__main__":
                     start_cell = stack.pop()
             grid[start_cell[0]][start_cell[1]]["visited"] = True
             unvisited = find_unvisited()
-
         # write grid to file
         filename = f"grids/grid_{i}.py"
         f = open(filename, "w")
-        f.write("grid = ")
-        f.write(str(grid))
+        f.write("from node import node\n")
+        f.write("grid = [\n")
+        for row in grid:
+            f.write("[\n")
+            for item in row:
+                f.write(f"node(location=({item['x']}, {item['y']}), unblocked={item['unblocked']}),\n")
+            f.write("],\n")
+        f.write("]")
         f.close()
