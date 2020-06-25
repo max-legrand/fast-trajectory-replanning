@@ -23,7 +23,6 @@ class node:
         self.spath = spath
         self.neighbors = []
         self.previous = None
-        self.closed = False
 
     def addNeighbors(self, grid):
         i = self.location[0]

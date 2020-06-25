@@ -9,18 +9,7 @@ fileOverview:   View grid inside grids folder
 import importlib
 import pygame
 import argparse
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)  # Start
-ORANGE = (255, 153, 0)  # End
-PURPLE = (204, 153, 255)  # Expansion
-PINK = (255, 102, 153)  # Shortest path
-WIDTH = 5
-HEIGHT = 5
-MARGIN = 2.5
-MAXSIZE = 101
-WINDOW_SIZE = [760, 760]
+from constants import BLACK, WHITE, WINDOW_SIZE, PINK, ORANGE, GREEN, PURPLE, MARGIN, HEIGHT, WIDTH, MAXSIZE
 
 pygame.init()
 screen = pygame.display.set_mode(WINDOW_SIZE)
@@ -39,8 +28,8 @@ def view_grid(grid, ismain=False, start=None, end=None):
             if event.type == pygame.QUIT:
                 done = True
         screen.fill(BLACK)
-        for row in range(0, 101):
-            for column in range(0, 101):
+        for row in range(0, MAXSIZE):
+            for column in range(0, MAXSIZE):
                 color = WHITE
                 try:
                     if grid[row][column].unblocked is False:

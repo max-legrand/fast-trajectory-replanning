@@ -7,15 +7,7 @@ fileOverview:   Generates 50 unique grids and outputs files to grids folder
 '''
 
 import random
-
-# Defined constants
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-WIDTH = 10
-HEIGHT = 10
-MARGIN = 5
-MAXSIZE = 101
-BLOCK_PROBABILITY = 0.3
+from constants import MAXSIZE
 
 
 def get_neighbors(x, y):

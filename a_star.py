@@ -12,9 +12,10 @@ fileOverview:   Peforms A* search
 
 import random
 import importlib
-from gen_grid import MAXSIZE
 import view_grid
 import pygame
+from constants import MAXSIZE
+import time
 
 
 def find_in_list(find_list, location):
@@ -72,10 +73,6 @@ def a_star(grid, start, end):
     openList.append(startNode)
 
     while len(openList) > 0:
-        for cell in closedList:
-            grid[cell.location[0]][cell.location[1]].path = True
-        view_grid.view_grid(grid=grid, start=start, end=end)
-
         smallest_f_index = 0
         for counter in range(len(openList)):
             if openList[counter].f < openList[smallest_f_index].f:
@@ -83,15 +80,16 @@ def a_star(grid, start, end):
 
         currentNode = openList[smallest_f_index]
         if currentNode == endNode:
-            for i in range(round(currentNode.f)):
-                currentNode.closed = False
-                currentNode.path = True
+            while currentNode.previous is not startNode:
+                # currentNode.path = True
                 currentNode = currentNode.previous
                 path.append(currentNode)
             return path
         openList.pop(smallest_f_index)
         closedList.append(currentNode)
 
+        grid[currentNode.location[0]][currentNode.location[1]].path = True
+        view_grid.view_grid(grid=grid, start=start, end=end)
         neighbors = currentNode.neighbors
         for counter in range(len(neighbors)):
             neighbor = neighbors[counter]
@@ -109,24 +107,24 @@ def a_star(grid, start, end):
 
             if neighbor.previous is None:
                 neighbor.previous = currentNode
-    currentNode.closed = True
 
 
 if __name__ == "__main__":
 
     grid_num = random.randint(1, 50)
+
     print(f"Using grid {grid_num}")
     full_module_name = "grids." + f"grid_{grid_num}"
     grid_import = importlib.import_module(full_module_name)
     grid = grid_import.grid
 
-    start = (random.randint(0, 100), random.randint(0, 100))
+    start = (random.randint(0, MAXSIZE), random.randint(0, MAXSIZE))
     while grid[start[0]][start[1]].unblocked is False:
-        start = (random.randint(0, 100), random.randint(0, 100))
+        start = (random.randint(0, MAXSIZE), random.randint(0, MAXSIZE))
 
-    end = (random.randint(0, 100), random.randint(0, 100))
+    end = (random.randint(0, MAXSIZE), random.randint(0, MAXSIZE))
     while grid[end[0]][end[1]].unblocked is False and end != start:
-        end = (random.randint(0, 100), random.randint(0, 100))
+        end = (random.randint(0, MAXSIZE), random.randint(0, MAXSIZE))
 
     print(f"Starting at: {start[0]}, {start[1]}")
     print(f"Ending at: {end[0]}, {end[1]}")
@@ -139,10 +137,11 @@ if __name__ == "__main__":
 
     # print(path)
 
+    path.reverse()
     for cell in path:
         grid[cell.location[0]][cell.location[1]].spath = True
+        view_grid.view_grid(grid=grid, start=start, end=end)
 
-    view_grid.view_grid(grid=grid, start=start, end=end)
 
     done = False
     while not done:

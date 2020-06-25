@@ -1,0 +1,17 @@
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+GREEN = (0, 255, 0)  # Start
+ORANGE = (255, 153, 0)  # End
+PURPLE = (204, 153, 255)  # Expansion
+PINK = (255, 102, 153)  # Shortest path
+WIDTH = 6
+HEIGHT = 6
+MARGIN = 1
+WINDOW_SIZE = [710, 710]
+MAXSIZE = 101
+BLOCK_PROBABILITY = 0.3
+
+# WIDTH = 50
+# HEIGHT = 50
+# MARGIN = 25
+# WINDOW_SIZE = [500, 500]
