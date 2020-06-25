@@ -15,7 +15,6 @@ import importlib
 import view_grid
 import pygame
 from constants import MAXSIZE
-import time
 
 
 def find_in_list(find_list, location):
@@ -141,7 +140,6 @@ if __name__ == "__main__":
     for cell in path:
         grid[cell.location[0]][cell.location[1]].spath = True
         view_grid.view_grid(grid=grid, start=start, end=end)
-
 
     done = False
     while not done:
