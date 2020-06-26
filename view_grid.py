@@ -6,66 +6,35 @@ lastChangedBy:  Max Legrand
 fileOverview:   View grid inside grids folder
 '''
 
-import importlib
+import csv
 import pygame
 import argparse
-from constants import BLACK, WHITE, WINDOW_SIZE, PINK, ORANGE, GREEN, PURPLE, MARGIN, HEIGHT, WIDTH, MAXSIZE
+import timeit
+from a_star_search import a_star
+from constants import BLACK, WHITE, WINDOW_SIZE, ORANGE, GREEN, MARGIN, HEIGHT, WIDTH, MAXSIZE
 
-pygame.init()
-screen = pygame.display.set_mode(WINDOW_SIZE)
-pygame.display.set_caption("MAZE")
+time = 0
+total_distance = 0
+runtime = 0
 
 
-def view_grid(grid, ismain=False, start=None, end=None):
-    # Initialize pygame
-    done = False
-
-    # Draw and update grid
-    while not done:
-        if not ismain:
-            done = True
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                done = True
-        screen.fill(BLACK)
-        for row in range(0, MAXSIZE):
-            for column in range(0, MAXSIZE):
-                color = WHITE
-                try:
-                    if grid[row][column].unblocked is False:
-                        color = BLACK
-                except Exception as e:
-                    e
-                try:
-                    if grid[row][column].path is True:
-                        color = PURPLE
-                except Exception as e:
-                    e
-                try:
-                    if grid[row][column].spath is True:
-                        color = PINK
-                except Exception as e:
-                    e
-                try:
-                    if (row, column) == start:
-                        color = GREEN
-                except Exception as e:
-                    e
-                try:
-                    if (row, column) == end:
-                        color = ORANGE
-                except Exception as e:
-                    e
-                pygame.draw.rect(
-                    screen,
-                    color,
-                    [(MARGIN + WIDTH) * column + MARGIN,
-                        (MARGIN + HEIGHT) * row + MARGIN,
-                        WIDTH,
-                        HEIGHT])
-        pygame.display.update()
-    if ismain:
-        pygame.quit()
+def clear_screen(grid):
+    for row in range(MAXSIZE):
+        for col in range(MAXSIZE):
+            if grid[row][col] != 1 and grid[row][col] != 2 and grid[row][col] != -1:
+                grid[row][col] = 0
+                pygame.draw.rect(screen, WHITE, [
+                    (MARGIN + WIDTH) * col + MARGIN,
+                    (MARGIN + HEIGHT) * row + MARGIN,
+                    WIDTH,
+                    HEIGHT
+                ])
+    pygame.display.flip()
+    global time
+    global total_distance
+    time = 0
+    total_distance = 0
+    print('Cleared')
 
 
 if __name__ == "__main__":
@@ -77,8 +46,65 @@ if __name__ == "__main__":
     args = parser.parse_args()
     grid_num = args.grid
 
-    # Progamatically import grid object from file
-    full_module_name = "grids." + f"grid_{grid_num}"
-    grid_import = importlib.import_module(full_module_name)
-    grid = grid_import.grid
-    view_grid(grid, True)
+    file_name = f"grids/grid_{grid_num}.txt"
+    grid = list(csv.reader(open(file_name)))
+    grid = [[int(col) for col in row] for row in grid]
+
+    start = (0, 0)
+    end = (MAXSIZE-1, MAXSIZE-1)
+
+    pygame.init()
+    screen = pygame.display.set_mode(WINDOW_SIZE)
+    pygame.display.set_caption("A Star")
+
+    finish = False
+    clock_obj = pygame.time.Clock()
+
+    for row in range(MAXSIZE):
+        for col in range(MAXSIZE):
+            if grid[row][col] == 1:
+                color = BLACK
+            else:
+                color = WHITE
+
+            pygame.draw.rect(screen, color, [
+                (MARGIN + WIDTH) * col + MARGIN,
+                (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT
+            ])
+
+            if grid[row][col] == 2:
+                color = GREEN
+                pygame.draw.rect(screen, color, [
+                    (MARGIN + WIDTH) * col + MARGIN,
+                    (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT
+                ])
+
+            if grid[row][col] == -1:
+                color = ORANGE
+                pygame.draw.rect(screen, color, [
+                    (MARGIN + WIDTH) * col + MARGIN,
+                    (MARGIN + HEIGHT) * row + MARGIN, WIDTH, HEIGHT
+                ])
+    # Draw board
+    pygame.display.flip()
+
+    while not finish:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                finish = True
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    clear_screen(grid)
+
+                elif event.key == pygame.K_a:
+                    clear_screen(grid)
+                    start_time = timeit.default_timer()
+                    path = a_star(start, end, screen, grid)
+                    end_time = timeit.default_timer()
+                    pygame.display.flip()
+                    time = end_time - start_time
+                    if path is not None:
+                        print(f"Forward A*: \nTotal time: {time} seconds\nTotal distance: {len(path)}")
+        pygame.display.flip()
+    pygame.quit()
