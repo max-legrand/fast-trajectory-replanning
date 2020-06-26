@@ -1,15 +1,28 @@
+#!/usr/bin/python
 '''
 file:           a_star_search.py
 author:         Max Legrand
 lastChangedBy:  Max Legrand
-fileOverview:   Peforms A* search
+fileOverview:   Peforms A* search and returns results
 '''
+import pygame
 from binary_heap import BinaryHeap
 from constants import PINK, MARGIN, WIDTH, HEIGHT, PURPLE, MAXSIZE
-import pygame
 
 
 def a_star(start, end, screen, grid):
+    """
+    Perform Forwards A* search
+
+    Args:
+        start (tuple): location of start
+        end (tuple): location of end
+        screen: pygame screen
+        grid (2D array): grid object
+
+    Returns:
+        array: returns shortest path array or None if no path found
+    """
 
     close_set = set()  # set has better search performance than list
     previous_nodes = {}
@@ -45,24 +58,22 @@ def a_star(start, end, screen, grid):
             neighbor_g_val = None
             try:
                 neighbor_g_val = g_vals[neighbor]
-            except Exception as e:
+            except KeyError as ex:
                 neighbor_g_val = 0
-                e
+                ex = str(ex) + "Key not found"
 
-            if neighbor in close_set and temp_g_val >= neighbor_g_val:
-                continue
-
-            if temp_g_val < neighbor_g_val or neighbor not in [item[1] for item in open_set.heap_array]:
-                previous_nodes[neighbor] = current_node
-                g_vals[neighbor] = temp_g_val
-                f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
-                if (current_node != start and current_node != end):
-                    pygame.draw.rect(screen, PURPLE, [
-                        (MARGIN + WIDTH) * current_node[1] + MARGIN,
-                        (MARGIN + HEIGHT) * current_node[0] + MARGIN, WIDTH, HEIGHT
-                    ])
-                pygame.display.flip()
-                open_set.insert((f_vals[neighbor], neighbor))
+            if neighbor not in close_set or temp_g_val < neighbor_g_val:
+                if temp_g_val < neighbor_g_val or neighbor not in [item[1] for item in open_set.heap_array]:
+                    previous_nodes[neighbor] = current_node
+                    g_vals[neighbor] = temp_g_val
+                    f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
+                    if current_node not in (start, end):
+                        pygame.draw.rect(screen, PURPLE, [
+                            (MARGIN + WIDTH) * current_node[1] + MARGIN,
+                            (MARGIN + HEIGHT) * current_node[0] + MARGIN, WIDTH, HEIGHT
+                        ])
+                    pygame.display.flip()
+                    open_set.insert((f_vals[neighbor], neighbor))
     print("Path not found")
     return None
 
@@ -85,6 +96,16 @@ def calc_distance(pos1, pos2):
 
 
 def get_neighbors(location, grid):
+    """
+    Finds all neighboring cells
+
+    Args:
+        location (tuple): row and column of cell to find neighbors of
+        grid (2D array): grid object
+
+    Returns:
+        array: list of neighbor tuples
+    """
     neighbors = []
     i = location[0]
     j = location[1]
