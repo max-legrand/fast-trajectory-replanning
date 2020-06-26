@@ -142,7 +142,7 @@ if __name__ == "__main__":
                     pygame.display.flip()
                     TIME = end_time - start_time
                     if path is not None:
-                        print(f"Forward A*: \Runtime: {TIME} seconds\nPath Length: {len(path)}")
+                        print(f"Forward A*: \nRuntime: {TIME} seconds\nPath Length: {len(path)}")
                 # Change grid
                 elif event.key == pygame.K_c:
                     if args.mac:
