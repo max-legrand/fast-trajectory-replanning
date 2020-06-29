@@ -10,7 +10,7 @@ from binary_heap import BinaryHeap
 from constants import PINK, MARGIN, WIDTH, HEIGHT, PURPLE, MAXSIZE
 
 
-def a_star(start, end, screen, grid):
+def forwards_a_star(start, end, screen, grid):
     """
     Perform Forwards A* search
 
