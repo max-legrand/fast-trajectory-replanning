@@ -11,7 +11,7 @@ import argparse
 import timeit
 import random
 import pygame
-from a_star_search import forwards_a_star
+from a_star_search import a_star
 from constants import BLACK, WHITE, WINDOW_SIZE, ORANGE, GREEN, MARGIN, HEIGHT, WIDTH, MAXSIZE
 from focus import focus_app
 
@@ -133,16 +133,26 @@ if __name__ == "__main__":
                 # Clear screen on space
                 if event.key == pygame.K_SPACE:
                     clear_screen(grid, globals_obj)
-                # Perform search on "a"
+                # Perform forward search on "f"
                 elif event.key == pygame.K_f:
                     clear_screen(grid, globals_obj)
                     start_time = timeit.default_timer()
-                    path = forwards_a_star(globals_obj["start"], globals_obj["end"], screen, grid)
+                    path = a_star(globals_obj["start"], globals_obj["end"], screen, grid, True)
                     end_time = timeit.default_timer()
                     pygame.display.flip()
                     TIME = end_time - start_time
                     if path is not None:
                         print(f"Forward A*: \nRuntime: {TIME} seconds\nPath Length: {len(path)}")
+                # Perform backwards search on "b"
+                elif event.key == pygame.K_b:
+                    clear_screen(grid, globals_obj)
+                    start_time = timeit.default_timer()
+                    path = a_star(globals_obj["start"], globals_obj["end"], screen, grid, False)
+                    end_time = timeit.default_timer()
+                    pygame.display.flip()
+                    TIME = end_time - start_time
+                    if path is not None:
+                        print(f"Backwards A*: \nRuntime: {TIME} seconds\nPath Length: {len(path)}")
                 # Change grid
                 elif event.key == pygame.K_c:
                     if args.mac:
