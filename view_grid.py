@@ -137,7 +137,7 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_f:
                     clear_screen(grid, globals_obj)
                     start_time = timeit.default_timer()
-                    path = a_star(globals_obj["start"], globals_obj["end"], screen, grid, True)
+                    path = a_star((globals_obj["start"], globals_obj["end"]), screen, grid, True)
                     end_time = timeit.default_timer()
                     pygame.display.flip()
                     TIME = end_time - start_time
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_b:
                     clear_screen(grid, globals_obj)
                     start_time = timeit.default_timer()
-                    path = a_star(globals_obj["start"], globals_obj["end"], screen, grid, False)
+                    path = a_star((globals_obj["start"], globals_obj["end"]), screen, grid, False)
                     end_time = timeit.default_timer()
                     pygame.display.flip()
                     TIME = end_time - start_time

@@ -10,19 +10,22 @@ from binary_heap import BinaryHeap
 from constants import PINK, MARGIN, WIDTH, HEIGHT, PURPLE, MAXSIZE
 
 
-def a_star(start, end, screen, grid, forwards):
+def a_star(points, screen, grid, forwards, draw=True):
     """
-    Perform Forwards A* search
+    Perform A* search, either forwards or backwards
 
     Args:
-        start (tuple): location of start
-        end (tuple): location of end
-        screen: pygame screen
-        grid (2D array): grid object
+        points (Tuple): Tuple containing two tuples: start and end locations
+        screen (Pygame Screen): screen to draw content
+        grid (2D array): 2D array representing grid
+        forwards (bool): flag for forwards or backwards
+        draw (bool, optional): flag for whether to draw grid or not. Defaults to True.
 
     Returns:
-        array: returns shortest path array or None if no path found
-    """
+        [type]: [description]
+    """    
+    start = points[0]
+    end = points[1]
 
     close_set = set()  # set has better search performance than list
     previous_nodes = {}
@@ -45,12 +48,12 @@ def a_star(start, end, screen, grid, forwards):
         if (current_node == end and forwards) or (current_node == start and not forwards):
             path = []
             while current_node in previous_nodes:
-                if current_node not in (start, end):
+                if current_node not in (start, end) and draw:
                     pygame.draw.rect(screen, PINK, [
                         (MARGIN + WIDTH) * current_node[1] + MARGIN,
                         (MARGIN + HEIGHT) * current_node[0] + MARGIN, WIDTH, HEIGHT
                     ])
-                pygame.display.flip()
+                    pygame.display.flip()
                 path.append(current_node)
                 current_node = previous_nodes[current_node]
             return path
@@ -67,22 +70,23 @@ def a_star(start, end, screen, grid, forwards):
                 neighbor_g_val = 0
                 ex = str(ex) + "Key not found"
 
-            if neighbor not in close_set or temp_g_val < neighbor_g_val:
-                if temp_g_val < neighbor_g_val or neighbor not in [item[1] for item in open_set.heap_array]:
-                    previous_nodes[neighbor] = current_node
-                    g_vals[neighbor] = temp_g_val
-                    if forwards:
-                        f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
-                    else:
-                        f_vals[neighbor] = temp_g_val + calc_distance(neighbor, start)
+            if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and 
+                (temp_g_val < neighbor_g_val or neighbor not in [item[1] 
+                    for item in open_set.heap_array])):
+                previous_nodes[neighbor] = current_node
+                g_vals[neighbor] = temp_g_val
+                if forwards:
+                    f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
+                else:
+                    f_vals[neighbor] = temp_g_val + calc_distance(neighbor, start)
 
-                    if current_node not in (start, end):
-                        pygame.draw.rect(screen, PURPLE, [
-                            (MARGIN + WIDTH) * current_node[1] + MARGIN,
-                            (MARGIN + HEIGHT) * current_node[0] + MARGIN, WIDTH, HEIGHT
-                        ])
+                if current_node not in (start, end) and draw:
+                    pygame.draw.rect(screen, PURPLE, [
+                        (MARGIN + WIDTH) * current_node[1] + MARGIN,
+                        (MARGIN + HEIGHT) * current_node[0] + MARGIN, WIDTH, HEIGHT
+                    ])
                     pygame.display.flip()
-                    open_set.insert((f_vals[neighbor], neighbor))
+                open_set.insert((f_vals[neighbor], neighbor))
     print("Path not found")
     return None
 
