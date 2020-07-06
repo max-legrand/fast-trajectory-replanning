@@ -19,14 +19,20 @@ globals_obj = {}
 globals_obj["time"] = 0
 globals_obj["total_distance"] = 0
 
-def clear_screen(grid_obj, global_obj):
+def clear_screen(grid_obj, global_obj, searchObj):
     """
     Clear current screen
 
     Args:
         grid_obj (2D array): grid object
         global_obj (Global): global object
+        searchObj (Search): search object
     """
+    searchObj.fvals = {}
+    searchObj.gvals = {}
+    searchObj.hvals = {}
+    searchObj.clset = []
+    searchObj.prev = {}
     for row in range(MAXSIZE):
         for cols in range(MAXSIZE):
             if grid_obj[row][cols] != 1 and grid_obj[row][cols] != 2 and grid_obj[row][cols] != -1:
@@ -169,11 +175,11 @@ if __name__ == "__main__":
 
                 # Clear screen on space
                 if event.key == pygame.K_SPACE:
-                    clear_screen(grid, globals_obj)
+                    clear_screen(grid, globals_obj, searchObject)
 
                 # Perform forward search on "f"
                 elif event.key == pygame.K_f:
-                    clear_screen(grid, globals_obj)
+                    clear_screen(grid, globals_obj, searchObject)
                     start_time = timeit.default_timer()
                     path = searchObject.a_star(grid, True)
                     end_time = timeit.default_timer()
@@ -182,7 +188,7 @@ if __name__ == "__main__":
 
                 # Perform backwards search on "b"
                 elif event.key == pygame.K_b:
-                    clear_screen(grid, globals_obj)
+                    clear_screen(grid, globals_obj, searchObject)
                     start_time = timeit.default_timer()
                     path = searchObject.a_star(grid, False)
                     end_time = timeit.default_timer()
@@ -191,13 +197,36 @@ if __name__ == "__main__":
 
                  # Perform adaptive search on "a"
                 elif event.key == pygame.K_a:
-                    clear_screen(grid, globals_obj)
+                    clear_screen(grid, globals_obj, searchObject)
                     # Load F-Values
+                    path = searchObject.a_star(grid, True)
+                    for item in searchObject.clset:
+                        searchObject.hvals[item] = searchObject.fvals[item] - searchObject.gvals[searchObject.end]
                     start_time = timeit.default_timer()
-                    path, closed_list = searchObject.adap_a_star(grid, {}, {}, 3, None)
+                    # path, closed_list = searchObject.adap_a_star(grid, searchObject.gvals, {}, 2, None)
+                    path, closed_list = searchObject.adap_a_star(grid)
                     end_time = timeit.default_timer()
                     TIME = end_time - start_time
                     draw_path("Adaptive A*", path, searchObject, closed_list)
+
+                # Perform backwards search -- high g on "r""
+                elif event.key == pygame.K_r:
+                    clear_screen(grid, globals_obj, searchObject)
+                    start_time = timeit.default_timer()
+                    path = searchObject.a_star(grid, False, True)
+                    end_time = timeit.default_timer()
+                    TIME = end_time - start_time
+                    draw_path("Backwards A* High G", path, searchObject)
+
+                 # Perform forwards search -- high g on "e"
+                elif event.key == pygame.K_e:
+                    clear_screen(grid, globals_obj, searchObject)
+                    # Load F-Values
+                    start_time = timeit.default_timer()
+                    path = searchObject.a_star(grid, True, True)
+                    end_time = timeit.default_timer()
+                    TIME = end_time - start_time
+                    draw_path("Forwards A* High G", path, searchObject)
 
                 # Change grid
                 elif event.key == pygame.K_c:
