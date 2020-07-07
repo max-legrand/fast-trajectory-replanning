@@ -68,3 +68,21 @@ for i in range(0, 10):
     # TIME = end_time - start_time
 avg_val = expanded_cells / 10
 print(f"Average Expanded Cells Adaptive A*: {avg_val}")
+expanded_cells = 0
+idx = 0
+for i in range(0, 10):
+    print(animation[idx % len(animation)], end="\r")
+    idx += 1
+    time.sleep(0.1)
+    # start_time = timeit.default_timer()
+    path = searchObject.a_star(grid, True, True)
+    expanded_cells = expanded_cells + len(searchObject.clset)
+    searchObject.fvals = {}
+    searchObject.gvals = {}
+    searchObject.hvals = {}
+    searchObject.clset = []
+    searchObject.prev = {}
+    # end_time = timeit.default_timer()
+    # TIME = end_time - start_time
+avg_val = expanded_cells / 10
+print(f"Average Expanded Cells Forward A* High G: {avg_val}")
