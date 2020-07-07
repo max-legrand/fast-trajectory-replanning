@@ -8,8 +8,7 @@ fileOverview:   Generates 50 unique grids and outputs files to grids folder
 
 import random
 import csv
-from constants import MAXSIZE
-
+from .constants_vals import MAXSIZE
 
 if __name__ == "__main__":
     # Iterate for 50 grids

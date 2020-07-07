@@ -1,9 +1,9 @@
 #!/usr/bin/env pipenv run python
 '''
-file:           constants.py
+file:           constants_vals.py
 author:         Max Legrand
 lastChangedBy:  Max Legrand
-fileOverview:   Constants for grid and GUI display
+fileOverview:   constants_vals for grid and GUI display
 '''
 
 BLACK = (0, 0, 0)  # Wall

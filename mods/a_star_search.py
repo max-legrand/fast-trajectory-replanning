@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env pipenv run python
 '''
 file:           a_star_search.py
 author:         Max Legrand
@@ -8,7 +8,8 @@ fileOverview:   Peforms A* search and returns results
 
 import random
 from heapq import heappush, heappop
-from constants import MAXSIZE
+from .constants_vals import MAXSIZE
+
 
 class Search:
 
@@ -57,7 +58,6 @@ class Search:
             f_vals = {end: calc_distance(start, end)}
             heappush(open_set, (f_vals[end], 0, end))
 
-
         while len(open_set) > 0:
 
             current_node = heappop(open_set)[2]
@@ -69,6 +69,7 @@ class Search:
                     path.append(current_node)
                     current_node = previous_nodes[current_node]
                 self.prev = previous_nodes
+                self.clset = close_set
                 return path
 
             close_set.append(current_node)
@@ -86,8 +87,8 @@ class Search:
 
                 if high_g:
                     if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and
-                    (temp_g_val < neighbor_g_val or neighbor not in [item[2]
-                        for item in open_set])):
+                       (temp_g_val < neighbor_g_val or neighbor not in [item[2] for item in open_set])):
+
                         previous_nodes[neighbor] = current_node
                         g_vals[neighbor] = temp_g_val
                         if forwards:
@@ -95,7 +96,7 @@ class Search:
                         else:
                             f_vals[neighbor] = temp_g_val + calc_distance(neighbor, start)
 
-                        heappush(open_set, (f_vals[neighbor], MAXSIZE**2*f_vals[neighbor] - temp_g_val, neighbor))
+                        heappush(open_set, (f_vals[neighbor], MAXSIZE**2*f_vals[neighbor]-temp_g_val, neighbor))
                     self.hvals[neighbor] = calc_distance(neighbor, start)
                     self.fvals = f_vals
                     self.gvals = g_vals
@@ -103,8 +104,7 @@ class Search:
 
                 else:
                     if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and
-                    (temp_g_val < neighbor_g_val or neighbor not in [item[2]
-                        for item in open_set])):
+                       (temp_g_val < neighbor_g_val or neighbor not in [item[2] for item in open_set])):
                         previous_nodes[neighbor] = current_node
                         g_vals[neighbor] = temp_g_val
                         if forwards:
@@ -133,7 +133,6 @@ class Search:
         f_vals = {start: calc_distance(start, end)}
         heappush(open_set, (f_vals[start], start))
 
-
         while len(open_set) > 0:
 
             current_node = heappop(open_set)[1]
@@ -145,12 +144,12 @@ class Search:
                     path.append(current_node)
                     current_node = previous_nodes[current_node]
                 self.prev = previous_nodes
+                self.clset = close_set
                 return path, close_set
 
             close_set.append(current_node)
             neighbors = get_neighbors(current_node, grid)
             for neighbor in neighbors:
-
 
                 temp_g_val = g_vals[current_node] + 1
 

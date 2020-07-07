@@ -11,13 +11,14 @@ import argparse
 import timeit
 import random
 import pygame
-from a_star_search import Search
-from constants import BLACK, WHITE, PURPLE, PINK, WINDOW_SIZE, ORANGE, GREEN, MARGIN, HEIGHT, WIDTH, MAXSIZE
-from focus import focus_app
+from mods.a_star_search import Search
+from mods.constants_vals import BLACK, WHITE, PURPLE, PINK, WINDOW_SIZE, ORANGE, GREEN, MARGIN, HEIGHT, WIDTH, MAXSIZE
+from mods.focus import focus_app
 
 globals_obj = {}
 globals_obj["time"] = 0
 globals_obj["total_distance"] = 0
+
 
 def clear_screen(grid_obj, global_obj, searchObj):
     """
@@ -48,6 +49,7 @@ def clear_screen(grid_obj, global_obj, searchObj):
     global_obj["time"] = 0
     global_obj["total_distance"] = 0
     print('Cleared screens')
+    return searchObj
 
 
 def init_grid(grid_obj, rand):
@@ -63,8 +65,8 @@ def init_grid(grid_obj, rand):
     """
     # Initialize grid GUI
     if rand:
-        grid[0][0] = 0 if random.random() < 0.7 else 1
-        grid[MAXSIZE-1][MAXSIZE-1] = 0 if random.random() < 0.7 else 1
+        grid_obj[0][0] = 0 if random.random() < 0.7 else 1
+        grid_obj[MAXSIZE-1][MAXSIZE-1] = 0 if random.random() < 0.7 else 1
         start = (random.randint(0, MAXSIZE-1), random.randint(0, MAXSIZE-1))
         end = (random.randint(0, MAXSIZE-1), random.randint(0, MAXSIZE-1))
 
@@ -72,8 +74,8 @@ def init_grid(grid_obj, rand):
         start = (0, 0)
         end = (MAXSIZE-1, MAXSIZE-1)
 
-    grid[start[0]][start[1]] = 2
-    grid[end[0]][end[1]] = -1
+    grid_obj[start[0]][start[1]] = 2
+    grid_obj[end[0]][end[1]] = -1
 
     for row in range(MAXSIZE):
         for col in range(MAXSIZE):
@@ -137,6 +139,7 @@ def draw_path(type_search, pathlist, searchobj, close_set=None):
                 ])
     pygame.display.flip()
 
+
 if __name__ == "__main__":
     # Get grid number from command line
     parser = argparse.ArgumentParser(description='View a grid')
@@ -175,11 +178,11 @@ if __name__ == "__main__":
 
                 # Clear screen on space
                 if event.key == pygame.K_SPACE:
-                    clear_screen(grid, globals_obj, searchObject)
+                    searchObject = clear_screen(grid, globals_obj, searchObject)
 
                 # Perform forward search on "f"
                 elif event.key == pygame.K_f:
-                    clear_screen(grid, globals_obj, searchObject)
+                    searchObject = clear_screen(grid, globals_obj, searchObject)
                     start_time = timeit.default_timer()
                     path = searchObject.a_star(grid, True)
                     end_time = timeit.default_timer()
@@ -188,16 +191,16 @@ if __name__ == "__main__":
 
                 # Perform backwards search on "b"
                 elif event.key == pygame.K_b:
-                    clear_screen(grid, globals_obj, searchObject)
+                    searchObject = clear_screen(grid, globals_obj, searchObject)
                     start_time = timeit.default_timer()
                     path = searchObject.a_star(grid, False)
                     end_time = timeit.default_timer()
                     TIME = end_time - start_time
                     draw_path("Backwards A*", path, searchObject)
 
-                 # Perform adaptive search on "a"
+                # Perform adaptive search on "a"
                 elif event.key == pygame.K_a:
-                    clear_screen(grid, globals_obj, searchObject)
+                    searchObject = clear_screen(grid, globals_obj, searchObject)
                     # Load F-Values
                     path = searchObject.a_star(grid, True)
                     for item in searchObject.clset:
@@ -207,20 +210,20 @@ if __name__ == "__main__":
                     path, closed_list = searchObject.adap_a_star(grid)
                     end_time = timeit.default_timer()
                     TIME = end_time - start_time
-                    draw_path("Adaptive A*", path, searchObject, closed_list)
+                    draw_path("Adaptive A*", path, searchObject)
 
                 # Perform backwards search -- high g on "r""
                 elif event.key == pygame.K_r:
-                    clear_screen(grid, globals_obj, searchObject)
+                    searchObject = clear_screen(grid, globals_obj, searchObject)
                     start_time = timeit.default_timer()
                     path = searchObject.a_star(grid, False, True)
                     end_time = timeit.default_timer()
                     TIME = end_time - start_time
                     draw_path("Backwards A* High G", path, searchObject)
 
-                 # Perform forwards search -- high g on "e"
+                # Perform forwards search -- high g on "e"
                 elif event.key == pygame.K_e:
-                    clear_screen(grid, globals_obj, searchObject)
+                    searchObject = clear_screen(grid, globals_obj, searchObject)
                     # Load F-Values
                     start_time = timeit.default_timer()
                     path = searchObject.a_star(grid, True, True)
