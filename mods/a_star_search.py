@@ -48,21 +48,97 @@ class Search:
         close_set = []
         previous_nodes = {}
         open_set = []
+        h_vals = {}
 
         if forwards:
             g_vals = {start: 0}
             f_vals = {start: calc_distance(start, end)}
-            heappush(open_set, (f_vals[start], 0, start))
+            heappush(open_set, (f_vals[start], 0, 0, start))
         else:
             g_vals = {end: 0}
             f_vals = {end: calc_distance(start, end)}
-            heappush(open_set, (f_vals[end], 0, end))
+            heappush(open_set, (f_vals[end], 0, 0, end))
 
         while len(open_set) > 0:
 
-            current_node = heappop(open_set)[2]
+            current_node = heappop(open_set)[3]
 
             if (current_node == end and forwards) or (current_node == start and not forwards):
+                close_set.append(current_node)
+                path = []
+                while current_node in previous_nodes:
+                    path.append(current_node)
+                    current_node = previous_nodes[current_node]
+                self.prev = previous_nodes
+                self.clset = close_set
+                self.hvals = h_vals
+                self.fvals = f_vals
+                self.gvals = g_vals
+                return path
+
+            close_set.append(current_node)
+            neighbors = get_neighbors(current_node, grid)
+            for neighbor in neighbors:
+
+                temp_g_val = g_vals[current_node] + 1
+
+                neighbor_g_val = None
+                try:
+                    neighbor_g_val = g_vals[neighbor]
+                except KeyError as ex:
+                    neighbor_g_val = 0
+                    ex = str(ex) + "Key not found"
+
+                if high_g:
+                    if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and
+                       (temp_g_val < neighbor_g_val or neighbor not in [item[3] for item in open_set])):
+
+                        previous_nodes[neighbor] = current_node
+                        g_vals[neighbor] = temp_g_val
+                        if forwards:
+                            h_vals[neighbor] = calc_distance(neighbor, end)
+                            f_vals[neighbor] = g_vals[neighbor] + calc_distance(neighbor, end)
+                        else:
+                            h_vals[neighbor] = calc_distance(neighbor, start)
+                            f_vals[neighbor] = g_vals[neighbor] + calc_distance(neighbor, start)
+                        tie_breaker = random.randint(0, 100)
+                        heappush(open_set, (f_vals[neighbor],
+                                            MAXSIZE**2*f_vals[neighbor]-temp_g_val,
+                                            tie_breaker,
+                                            neighbor))
+
+                else:
+                    if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and
+                       (temp_g_val < neighbor_g_val or neighbor not in [item[3] for item in open_set])):
+                        previous_nodes[neighbor] = current_node
+                        g_vals[neighbor] = temp_g_val
+                        if forwards:
+                            h_vals[neighbor] = calc_distance(neighbor, end)
+                            f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
+                        else:
+                            h_vals[neighbor] = calc_distance(neighbor, start)
+                            f_vals[neighbor] = temp_g_val + calc_distance(neighbor, start)
+                        tie_breaker = random.randint(0, 100)
+                        heappush(open_set, (f_vals[neighbor], temp_g_val, tie_breaker, neighbor))
+
+        # print("Path not found")
+        return None
+
+    def adap_a_star(self, grid):
+        start = self.start
+        end = self.end
+        close_set = []
+        previous_nodes = {}
+        open_set = []
+        h_vals = self.hvals
+        g_vals = {start: 0}
+        f_vals = {start: calc_distance(start, end)}
+        heappush(open_set, (f_vals[start], 0, 0, start))
+        while len(open_set) > 0:
+
+            current_node = heappop(open_set)[3]
+
+            if current_node == end:
                 close_set.append(current_node)
                 path = []
                 while current_node in previous_nodes:
@@ -85,85 +161,10 @@ class Search:
                     neighbor_g_val = 0
                     ex = str(ex) + "Key not found"
 
-                if high_g:
-                    if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and
-                       (temp_g_val < neighbor_g_val or neighbor not in [item[2] for item in open_set])):
-
-                        previous_nodes[neighbor] = current_node
-                        g_vals[neighbor] = temp_g_val
-                        if forwards:
-                            f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
-                        else:
-                            f_vals[neighbor] = temp_g_val + calc_distance(neighbor, start)
-
-                        heappush(open_set, (f_vals[neighbor], MAXSIZE**2*f_vals[neighbor]-temp_g_val, neighbor))
-                    self.hvals[neighbor] = calc_distance(neighbor, start)
-                    self.fvals = f_vals
-                    self.gvals = g_vals
-                    self.clset = close_set
-
-                else:
-                    if ((neighbor not in close_set or temp_g_val < neighbor_g_val) and
-                       (temp_g_val < neighbor_g_val or neighbor not in [item[2] for item in open_set])):
-                        previous_nodes[neighbor] = current_node
-                        g_vals[neighbor] = temp_g_val
-                        if forwards:
-                            f_vals[neighbor] = temp_g_val + calc_distance(neighbor, end)
-                        else:
-                            f_vals[neighbor] = temp_g_val + calc_distance(neighbor, start)
-                        tie_breaker = random.randint(0, 100)
-                        heappush(open_set, (f_vals[neighbor], tie_breaker, neighbor))
-
-                    self.hvals[neighbor] = calc_distance(neighbor, start)
-                    self.fvals = f_vals
-                    self.gvals = g_vals
-                    self.clset = close_set
-
-        print("Path not found")
-        return None
-
-    def adap_a_star(self, grid):
-        start = self.start
-        end = self.end
-        close_set = []
-        previous_nodes = {}
-        open_set = []
-        h_vals = self.hvals
-        g_vals = {start: 0}
-        f_vals = {start: calc_distance(start, end)}
-        heappush(open_set, (f_vals[start], start))
-
-        while len(open_set) > 0:
-
-            current_node = heappop(open_set)[1]
-
-            if current_node == end:
-                close_set.append(current_node)
-                path = []
-                while current_node in previous_nodes:
-                    path.append(current_node)
-                    current_node = previous_nodes[current_node]
-                self.prev = previous_nodes
-                self.clset = close_set
-                return path, close_set
-
-            close_set.append(current_node)
-            neighbors = get_neighbors(current_node, grid)
-            for neighbor in neighbors:
-
-                temp_g_val = g_vals[current_node] + 1
-
-                neighbor_g_val = None
-                try:
-                    neighbor_g_val = g_vals[neighbor]
-                except KeyError as ex:
-                    neighbor_g_val = 0
-                    ex = str(ex) + "Key not found"
-
                 if neighbor in close_set and temp_g_val >= neighbor_g_val:
                     continue
 
-                if temp_g_val < neighbor_g_val or neighbor not in [item[1] for item in open_set]:
+                if temp_g_val < neighbor_g_val or neighbor not in [item[3] for item in open_set]:
                     previous_nodes[neighbor] = current_node
                     g_vals[neighbor] = temp_g_val
 
@@ -171,15 +172,14 @@ class Search:
                         h_vals[neighbor] = calc_distance(neighbor, end)
 
                     f_vals[neighbor] = g_vals[neighbor] + h_vals[neighbor]
-                    heappush(open_set, (f_vals[neighbor], neighbor))
+                    tie_breaker = random.randint(0, 100)
+                    heappush(open_set, (f_vals[neighbor],
+                                        MAXSIZE**2*f_vals[neighbor]-temp_g_val,
+                                        tie_breaker,
+                                        neighbor))
 
-                self.fvals = f_vals
-                self.gvals = g_vals
-                self.clset = close_set
-                self.hvals = h_vals
-
-        print("Path not found")
-        return None, None
+        # print("Path not found")
+        return None
 
 
 def calc_distance(pos1, pos2):

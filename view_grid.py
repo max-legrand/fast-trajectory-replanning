@@ -137,6 +137,8 @@ def draw_path(type_search, pathlist, searchobj, close_set=None):
                     (MARGIN + WIDTH) * cell_item[1] + MARGIN,
                     (MARGIN + HEIGHT) * cell_item[0] + MARGIN, WIDTH, HEIGHT
                 ])
+    else:
+        print("Path Not Found")
     pygame.display.flip()
 
 
@@ -202,7 +204,7 @@ if __name__ == "__main__":
                 elif event.key == pygame.K_a:
                     searchObject = clear_screen(grid, globals_obj, searchObject)
                     # Load F-Values
-                    path = searchObject.a_star(grid, True)
+                    path = searchObject.a_star(grid, True, True)
                     for item in searchObject.clset:
                         searchObject.hvals[item] = searchObject.fvals[item] - searchObject.gvals[searchObject.end]
                     start_time = timeit.default_timer()
