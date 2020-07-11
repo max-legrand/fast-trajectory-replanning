@@ -7,7 +7,12 @@ verify_ssl = true
 
 [packages]
 pygame = "==2.0.0.dev6"
+pydash = "*"
+pyfiglet = "*"
+termcolor = "*"
+colorama = "*"
 pylint = "*"
+flake8 = "*"
 
 [requires]
-python_version = "3.7.7"
+python_version = "3.7.8"
