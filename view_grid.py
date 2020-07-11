@@ -209,7 +209,7 @@ if __name__ == "__main__":
                         searchObject.hvals[item] = searchObject.fvals[item] - searchObject.gvals[searchObject.end]
                     start_time = timeit.default_timer()
                     # path, closed_list = searchObject.adap_a_star(grid, searchObject.gvals, {}, 2, None)
-                    path, closed_list = searchObject.adap_a_star(grid)
+                    path = searchObject.adap_a_star(grid)
                     end_time = timeit.default_timer()
                     TIME = end_time - start_time
                     draw_path("Adaptive A*", path, searchObject)

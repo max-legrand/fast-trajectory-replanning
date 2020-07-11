@@ -125,6 +125,15 @@ class Search:
         return None
 
     def adap_a_star(self, grid):
+        """
+        Performs Adaptive A* search using predetermined heuristics
+
+        Args:
+            grid (2D array): 2D array representing a grid
+
+        Returns:
+            list: shortest path taken
+        """
         start = self.start
         end = self.end
         close_set = []

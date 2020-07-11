@@ -12,6 +12,7 @@ pyfiglet = "*"
 termcolor = "*"
 colorama = "*"
 pylint = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.7.8"

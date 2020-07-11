@@ -1,4 +1,10 @@
 #!/usr/bin/env pipenv run python
+'''
+file:           stats.py
+author:         Max Legrand
+lastChangedBy:  Max Legrand
+fileOverview:   Generates statistics for specific grids
+'''
 import csv
 import sys
 import time
@@ -7,18 +13,7 @@ import timeit
 from termcolor import cprint
 from pyfiglet import figlet_format
 from colorama import init
-from mods.a_star_search import Search
-from mods.constants_vals import MAXSIZE
-
-
-def init_grid(grid_obj):
-    start = (0, 0)
-    end = (MAXSIZE-1, MAXSIZE-1)
-    grid_obj[start[0]][start[1]] = 2
-    grid_obj[end[0]][end[1]] = -1
-    obj = Search(start=start, end=end)
-    return obj
-
+from total_stats import reset_values, init_grid
 
 init(strip=not sys.stdout.isatty())  # strip colors if stdout is redirected
 
@@ -26,7 +21,13 @@ cprint(figlet_format('Search Statistics', font='small'),
        'white')
 
 
-def perform_stats(grid_num):
+def perform_stats(grid_num):  # pylint: disable=too-many-statements
+    """
+    Performs specified search 10 times per grid and outputs statistics to stdout
+
+    Args:
+        grid_num (int): number of grid to perform searches on
+    """
     dirname = os.path.dirname(os.path.realpath(__file__))
     file_name = dirname+f"/grids/grid_{grid_num}.txt"
     grid = list(csv.reader(open(file_name)))
@@ -43,7 +44,7 @@ def perform_stats(grid_num):
     idx = 0
     expanded_cells = 0
     totaltime = 0
-    for i in range(0, 10):
+    for _ in range(0, 10):
         print(animation[idx % len(animation)], end="\r")
         idx += 1
         time.sleep(0.1)
@@ -52,11 +53,7 @@ def perform_stats(grid_num):
         end_time = timeit.default_timer()
         TIME = end_time - start_time
         expanded_cells = expanded_cells + len(searchObject.clset)
-        searchObject.fvals = {}
-        searchObject.gvals = {}
-        searchObject.hvals = {}
-        searchObject.clset = []
-        searchObject.prev = {}
+        reset_values(searchObject)
         totaltime = totaltime + TIME
     avg_val = expanded_cells / 10
     avg_time = totaltime / 10
@@ -67,7 +64,7 @@ def perform_stats(grid_num):
     expanded_cells = 0
     idx = 0
     totaltime = 0
-    for i in range(0, 10):
+    for _ in range(0, 10):
         print(animation[idx % len(animation)], end="\r")
         idx += 1
         time.sleep(0.1)
@@ -78,11 +75,7 @@ def perform_stats(grid_num):
         searchObject.adap_a_star(grid)
         end_time = timeit.default_timer()
         expanded_cells = expanded_cells + len(searchObject.clset)
-        searchObject.fvals = {}
-        searchObject.gvals = {}
-        searchObject.hvals = {}
-        searchObject.clset = []
-        searchObject.prev = {}
+        reset_values(searchObject)
         TIME = end_time - start_time
         totaltime = totaltime + TIME
     avg_val = expanded_cells / 10
@@ -94,7 +87,7 @@ def perform_stats(grid_num):
     expanded_cells = 0
     idx = 0
     totaltime = 0
-    for i in range(0, 10):
+    for _ in range(0, 10):
         print(animation[idx % len(animation)], end="\r")
         idx += 1
         time.sleep(0.1)
@@ -102,11 +95,7 @@ def perform_stats(grid_num):
         searchObject.a_star(grid, True, True)
         end_time = timeit.default_timer()
         expanded_cells = expanded_cells + len(searchObject.clset)
-        searchObject.fvals = {}
-        searchObject.gvals = {}
-        searchObject.hvals = {}
-        searchObject.clset = []
-        searchObject.prev = {}
+        reset_values(searchObject)
         TIME = end_time - start_time
         totaltime = totaltime + TIME
     avg_val = expanded_cells / 10
@@ -118,7 +107,7 @@ def perform_stats(grid_num):
     expanded_cells = 0
     idx = 0
     totaltime = 0
-    for i in range(0, 10):
+    for _ in range(0, 10):
         print(animation[idx % len(animation)], end="\r")
         idx += 1
         time.sleep(0.1)
@@ -126,11 +115,7 @@ def perform_stats(grid_num):
         searchObject.a_star(grid, False)
         end_time = timeit.default_timer()
         expanded_cells = expanded_cells + len(searchObject.clset)
-        searchObject.fvals = {}
-        searchObject.gvals = {}
-        searchObject.hvals = {}
-        searchObject.clset = []
-        searchObject.prev = {}
+        reset_values(searchObject)
         TIME = end_time - start_time
         totaltime = totaltime + TIME
     avg_val = expanded_cells / 10
@@ -142,7 +127,7 @@ def perform_stats(grid_num):
     expanded_cells = 0
     totaltime = 0
     idx = 0
-    for i in range(0, 10):
+    for _ in range(0, 10):
         print(animation[idx % len(animation)], end="\r")
         idx += 1
         time.sleep(0.1)
@@ -150,11 +135,7 @@ def perform_stats(grid_num):
         searchObject.a_star(grid, False, True)
         end_time = timeit.default_timer()
         expanded_cells = expanded_cells + len(searchObject.clset)
-        searchObject.fvals = {}
-        searchObject.gvals = {}
-        searchObject.hvals = {}
-        searchObject.clset = []
-        searchObject.prev = {}
+        reset_values(searchObject)
         TIME = end_time - start_time
         totaltime = totaltime + TIME
     avg_val = expanded_cells / 10

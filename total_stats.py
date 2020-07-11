@@ -1,4 +1,11 @@
 #!/usr/bin/env pipenv run python
+'''
+file:           total_stats.py
+author:         Max Legrand
+lastChangedBy:  Max Legrand
+fileOverview:   Iterates over all grids and generates statistics for runtime
+                and cell expansions
+'''
 import csv
 import sys
 import time
@@ -12,6 +19,15 @@ from mods.constants_vals import MAXSIZE
 
 
 def init_grid(grid_obj):
+    """
+    Initializes Search object and grid array
+
+    Args:
+        grid_obj (2D array): array representing the grid
+
+    Returns:
+        Search: initialized search object
+    """
     start = (0, 0)
     end = (MAXSIZE-1, MAXSIZE-1)
     grid_obj[start[0]][start[1]] = 2
@@ -26,7 +42,27 @@ cprint(figlet_format('Search Statistics', font='small'),
        'white')
 
 
-def perform_stats(search_type):
+def reset_values(search_object):
+    """
+    Resets the values of a Search object
+
+    Args:
+        search_object (Search): object to reset
+    """
+    search_object.fvals = {}
+    search_object.gvals = {}
+    search_object.hvals = {}
+    search_object.clset = []
+    search_object.prev = {}
+
+
+def perform_stats(search_type):  # pylint:disable=too-many-statements,too-many-branches
+    """
+    Performs a specified search for all grids
+
+    Args:
+        search_type (String): name of search to performs
+    """
     total_valid = 0
     animation = "|/-\\"
     idx = 0
@@ -84,11 +120,7 @@ def perform_stats(search_type):
             expanded_cells = expanded_cells + len(searchObject.clset)
             total_valid = total_valid + 1
             totaltime = totaltime + TIME
-        searchObject.fvals = {}
-        searchObject.gvals = {}
-        searchObject.hvals = {}
-        searchObject.clset = []
-        searchObject.prev = {}
+        reset_values(searchObject)
 
     if search_type == "forward":
         search_string = "Forward A*"
